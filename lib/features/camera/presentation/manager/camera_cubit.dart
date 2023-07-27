@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:equatable/equatable.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image/image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,7 +21,6 @@ class CameraCubit extends Cubit<CameraState> {
   Future<void> addPhoto(Future<XFile> aPhoto) async {
     final xFile = await aPhoto;
     emit(state.copyWith(photos: [...state.photos, RotatableFile(xFile.path)]));
-    GallerySaver.saveImage(xFile.path, toDcim: true);
   }
 
   removeAllImages() {

@@ -40,9 +40,9 @@ class PhotosPage extends StatelessWidget {
                         angle: photos[index].degree * pi / 4,
                         child: photos[index].degree % 180 == 0
                             ? Image.file(
-                                height: 450, width: 300, photos[index].file)
+                                height: 450, width: 250, photos[index].file)
                             : Image.file(
-                                height: 300, width: 300, photos[index].file),
+                                height: 250, width: 250, photos[index].file),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
