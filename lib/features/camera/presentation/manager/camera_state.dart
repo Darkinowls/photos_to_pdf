@@ -2,7 +2,7 @@ part of 'camera_cubit.dart';
 
 class CameraState extends Equatable {
   final Status status;
-  final List<XFile> photos;
+  final List<RotatableFile> photos;
 
   const CameraState({
     this.status = Status.loaded,
@@ -14,7 +14,7 @@ class CameraState extends Equatable {
 
   CameraState copyWith({
     Status? status,
-    List<XFile>? photos,
+    List<RotatableFile>? photos,
   }) {
     return CameraState(
       status: status ?? this.status,
