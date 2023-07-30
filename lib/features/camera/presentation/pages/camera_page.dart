@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photos_to_pdf/core/locator.dart';
-import 'package:photos_to_pdf/features/camera/domain/entities/RotatableFile.dart';
+import 'package:photos_to_pdf/features/camera/domain/entities/rotatable_file.dart';
 import 'package:photos_to_pdf/features/camera/presentation/manager/camera_cubit.dart';
 
 import '../../../../main.dart';
@@ -18,7 +18,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   final CameraController cameraController =
-      CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
+      CameraController(cameras[0], ResolutionPreset.medium, enableAudio: false);
 
   @override
   void initState() {
@@ -62,8 +62,8 @@ class _CameraPageState extends State<CameraPage> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          BlocSelector<CameraCubit, CameraState, List<RotatableFile>>(
-            selector: (state) => state.photos,
+          BlocSelector<CameraCubit, CameraState, List<RotatableImage>>(
+            selector: (state) => state.files,
             builder: (context, photos) => GestureDetector(
               onTap: () => Navigator.pushNamed(context, '/selected_photos'),
               child: AnimatedContainer(
@@ -73,7 +73,7 @@ class _CameraPageState extends State<CameraPage> {
                     image: photos.isNotEmpty
                         ? DecorationImage(
                             fit: BoxFit.fill,
-                            image: FileImage(photos.last.file))
+                            image: FileImage(File(photos.last.path)))
                         : null,
                     shape: BoxShape.circle),
                 duration: const Duration(milliseconds: 250),
@@ -95,8 +95,8 @@ class _CameraPageState extends State<CameraPage> {
                 decoration: const BoxDecoration(
                     color: Colors.grey, shape: BoxShape.circle),
               )),
-          BlocSelector<CameraCubit, CameraState, List<RotatableFile>>(
-            selector: (state) => state.photos,
+          BlocSelector<CameraCubit, CameraState, List<RotatableImage>>(
+            selector: (state) => state.files,
             builder: (context, photos) => GestureDetector(
               onTap: lc<CameraCubit>().removeAllImages,
               child: AnimatedContainer(

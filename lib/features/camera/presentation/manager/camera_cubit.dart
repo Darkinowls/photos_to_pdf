@@ -2,16 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
-import 'package:camera/camera.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image/image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photos_to_pdf/core/status.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:path/path.dart' as path;
-import 'package:photos_to_pdf/features/camera/domain/entities/RotatableFile.dart';
+import 'package:photos_to_pdf/features/camera/domain/entities/rotatable_file.dart';
 import 'package:share_plus/share_plus.dart';
-// import 'package:share_plus/share_plus.dart';
 
 part 'camera_state.dart';
 
@@ -20,7 +18,9 @@ class CameraCubit extends Cubit<CameraState> {
 
   Future<void> addPhoto(Future<XFile> aPhoto) async {
     final xFile = await aPhoto;
-    emit(state.copyWith(photos: [...state.photos, RotatableFile(xFile.path)]));
+    final image = await decodeJpgFile(xFile.path);
+    emit(state.copyWith(
+        photos: [...state.files, RotatableImage(image!, xFile.path)]));
   }
 
   removeAllImages() {
@@ -28,32 +28,31 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   Future<void> sharePdf() async {
-    final rotatedImages = _rotateImages();
-    final pdf = await _convertImagesToPdf(await rotatedImages);
-    await Share.shareFiles([pdf.path]);
+    final images = state.files;
+    final rotatedImages = _rotateImages(images);
+    final pdf = await _convertImagesToPdf(rotatedImages);
+    await Share.shareXFiles([XFile(pdf.path)]);
   }
 
-  Future<List<RotatableFile>> _rotateImages() async {
-    final result = <RotatableFile>[];
-    for (int i = 0; i < state.photos.length; i++) {
-      final file = state.photos[i];
-      final image = decodeImage(await file.readAsBytes());
-      final rotatedImage = copyRotate(image!, angle: 90);
-      result
-          .add(RotatableFile(file.path)..writeAsBytes(encodeJpg(rotatedImage)));
+  List<Image> _rotateImages(List<RotatableImage> images) {
+    final result = <Image>[];
+    for (int i = 0; i < images.length; i++) {
+      final rImage = images[i];
+      final rotatedImage = copyRotate(rImage.image, angle: rImage.degree);
+      result.add(rotatedImage);
     }
     return result;
   }
 
   void rotateImage(int index) {
-    final result = <RotatableFile>[];
-    for (int i = 0; i < state.photos.length; i++) {
+    final result = <RotatableImage>[];
+    for (int i = 0; i < state.files.length; i++) {
       if (i != index) {
-        result.add(state.photos[i]);
+        result.add(state.files[i]);
       }
       if (i == index) {
-        final file = RotatableFile(
-            state.photos[i].file.path, state.photos[i].degree + 90);
+        final file = RotatableImage(state.files[i].image, state.files[i].path,
+            state.files[i].degree + 90);
         result.add(file);
       }
     }
@@ -61,21 +60,20 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   void deleteImage(int index) {
-    final result = <RotatableFile>[];
-    for (int i = 0; i < state.photos.length; i++) {
+    final result = <RotatableImage>[];
+    for (int i = 0; i < state.files.length; i++) {
       if (i != index) {
-        result.add(state.photos[i]);
+        result.add(state.files[i]);
       }
     }
     emit(state.copyWith(photos: result));
   }
 
-  Future<File> _convertImagesToPdf(List<RotatableFile> photos) async {
+  Future<File> _convertImagesToPdf(List<Image> photos) async {
     final document = pdf.Document();
     for (final photo in photos) {
-      final fileContent = await photo.readAsBytes();
-      document.addPage(pdf.Page(
-        build: (context) =>  pdf.Image(pdf.MemoryImage(fileContent))),
+      document.addPage(
+        pdf.Page(build: (context) => pdf.Image(pdf.ImageImage(photo))),
       );
     }
     Future<Uint8List> documentData = document.save();
@@ -84,5 +82,3 @@ class CameraCubit extends Cubit<CameraState> {
     return file.writeAsBytes(await documentData);
   }
 }
-
-// Image.file(File()),

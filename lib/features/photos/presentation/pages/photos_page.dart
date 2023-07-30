@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photos_to_pdf/core/locator.dart';
-import 'package:photos_to_pdf/features/camera/domain/entities/RotatableFile.dart';
+import 'package:photos_to_pdf/features/camera/domain/entities/rotatable_file.dart';
 import 'package:photos_to_pdf/features/camera/presentation/manager/camera_cubit.dart';
 
 class PhotosPage extends StatelessWidget {
@@ -24,9 +24,9 @@ class PhotosPage extends StatelessWidget {
                 icon: const Icon(Icons.share)),
           ],
         ),
-        BlocSelector<CameraCubit, CameraState, List<RotatableFile>>(
+        BlocSelector<CameraCubit, CameraState, List<RotatableImage>>(
           bloc: lc<CameraCubit>(),
-          selector: (state) => state.photos,
+          selector: (state) => state.files,
           builder: (context, photos) => SliverList.separated(
             itemCount: photos.length,
             itemBuilder: (context, index) => Card(
@@ -40,9 +40,9 @@ class PhotosPage extends StatelessWidget {
                         angle: photos[index].degree * pi / 4,
                         child: photos[index].degree % 180 == 0
                             ? Image.file(
-                                height: 450, width: 250, photos[index].file)
+                                height: 450, width: 250, File(photos[index].path))
                             : Image.file(
-                                height: 250, width: 250, photos[index].file),
+                                height: 250, width: 250, File(photos[index].path)),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +74,7 @@ class PhotosPage extends StatelessWidget {
                     ],
                   )),
             ),
-            separatorBuilder: (_, __) => SizedBox(height: 5),
+            separatorBuilder: (_, __) => const SizedBox(height: 5),
           ),
         )
       ],

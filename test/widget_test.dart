@@ -6,15 +6,15 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:photos_to_pdf/main.dart';
 
 void main() {
   test('Counter increments smoke test', () {
     final list = ["asdads", "aaa", "Amogus"];
-    print( listEquals( ["asdads", "aaa"], list) );
+    if (kDebugMode) {
+      print( listEquals( ["asdads", "aaa"], list) );
+    }
 
   });
 }
