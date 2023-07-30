@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.5 <4.0.0'
+  sdk: '>=3.0.1 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -36,10 +36,11 @@ dependencies:
   bloc: ^8.1.2
   camera: ^0.10.1
   equatable: ^2.0.5
-  image_picker: ^1.0.1
-  share_plus: ^5.0.0
+
+#  image_picker: ^1.0.1
+  share_plus: ^7.0.2
+
   pdf: ^3.10.4
-  page_transition: ^2.0.9
   path_provider: ^2.0.15
   path: ^1.8.3
   image: ^4.0.17

@@ -16,6 +16,8 @@ class RotatableFile extends Equatable {
 
   Uint8List readAsBytesSync () => file.readAsBytesSync();
 
+  Future<Uint8List> readAsBytes () async =>  file.readAsBytes();
+
   writeAsBytes (bytes) => file.writeAsBytes(bytes);
 
   @override

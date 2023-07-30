@@ -18,7 +18,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   final CameraController cameraController =
-      CameraController(cameras[0], ResolutionPreset.medium, enableAudio: false);
+      CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _CameraPageState extends State<CameraPage> {
         }
       }
     });
-
+    cameraController.setFocusMode(FocusMode.locked);
     super.initState();
   }
 
@@ -72,7 +72,8 @@ class _CameraPageState extends State<CameraPage> {
                 decoration: BoxDecoration(
                     image: photos.isNotEmpty
                         ? DecorationImage(
-                            fit: BoxFit.fill, image: FileImage(photos.last.file))
+                            fit: BoxFit.fill,
+                            image: FileImage(photos.last.file))
                         : null,
                     shape: BoxShape.circle),
                 duration: const Duration(milliseconds: 250),

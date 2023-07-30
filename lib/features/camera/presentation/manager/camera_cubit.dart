@@ -5,13 +5,13 @@ import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image/image.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photos_to_pdf/core/status.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:path/path.dart' as path;
 import 'package:photos_to_pdf/features/camera/domain/entities/RotatableFile.dart';
 import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';
 
 part 'camera_state.dart';
 
@@ -27,17 +27,17 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(photos: []));
   }
 
-  Future<ShareResult> sharePdf() async {
-    final rotatedImages = _rotateImage();
-    final file = await _convertImagesToPdf(rotatedImages);
-    return Share.shareXFiles([XFile(file.path)]);
+  Future<void> sharePdf() async {
+    final rotatedImages = _rotateImages();
+    final pdf = await _convertImagesToPdf(await rotatedImages);
+    await Share.shareFiles([pdf.path]);
   }
 
-  List<RotatableFile> _rotateImage() {
+  Future<List<RotatableFile>> _rotateImages() async {
     final result = <RotatableFile>[];
     for (int i = 0; i < state.photos.length; i++) {
       final file = state.photos[i];
-      final image = decodeImage(file.readAsBytesSync());
+      final image = decodeImage(await file.readAsBytes());
       final rotatedImage = copyRotate(image!, angle: 90);
       result
           .add(RotatableFile(file.path)..writeAsBytes(encodeJpg(rotatedImage)));
@@ -73,9 +73,10 @@ class CameraCubit extends Cubit<CameraState> {
   Future<File> _convertImagesToPdf(List<RotatableFile> photos) async {
     final document = pdf.Document();
     for (final photo in photos) {
+      final fileContent = await photo.readAsBytes();
       document.addPage(pdf.Page(
-        build: (context) => pdf.Image(pdf.MemoryImage(photo.readAsBytesSync())),
-      ));
+        build: (context) =>  pdf.Image(pdf.MemoryImage(fileContent))),
+      );
     }
     Future<Uint8List> documentData = document.save();
     final file = File(path.join(

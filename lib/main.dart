@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photos_to_pdf/core/locator.dart';
 import 'package:photos_to_pdf/features/camera/presentation/manager/camera_cubit.dart';
@@ -35,8 +34,7 @@ class MyApp extends StatelessWidget {
                   builder: (context) => const CameraPage());
             }
             if (settings.name == '/selected_photos') {
-              return PageTransition(
-                  child: PhotosPage(), type: PageTransitionType.leftToRight);
+              return MaterialPageRoute(builder: (context) => const PhotosPage());
             }
             return null;
           },
