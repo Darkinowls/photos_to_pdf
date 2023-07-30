@@ -28,10 +28,12 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   Future<void> sharePdf() async {
+    emit(state.copyWith(status:  Status.loading));
     final images = state.files;
     final rotatedImages = _rotateImages(images);
     final pdf = await _convertImagesToPdf(rotatedImages);
     await Share.shareXFiles([XFile(pdf.path)]);
+    emit(state.copyWith(status: Status.loaded));
   }
 
   List<Image> _rotateImages(List<RotatableImage> images) {
@@ -73,7 +75,9 @@ class CameraCubit extends Cubit<CameraState> {
     final document = pdf.Document();
     for (final photo in photos) {
       document.addPage(
-        pdf.Page(build: (context) => pdf.Image(pdf.ImageImage(photo))),
+        pdf.Page(
+            build: (context) =>
+                pdf.Center(child: pdf.Image(pdf.ImageImage(photo)))),
       );
     }
     Future<Uint8List> documentData = document.save();
