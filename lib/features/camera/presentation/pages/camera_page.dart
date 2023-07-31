@@ -19,7 +19,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   CameraController cameraController =
-      CameraController(cameras[0], ResolutionPreset.low, enableAudio: false);
+      CameraController(cameras[0], ResolutionPreset.high, enableAudio: false);
 
   @override
   void initState() {

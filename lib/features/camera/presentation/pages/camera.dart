@@ -6,6 +6,7 @@ import 'package:photos_to_pdf/core/locator.dart';
 import 'package:photos_to_pdf/features/camera/presentation/manager/camera_cubit.dart';
 import 'package:photos_to_pdf/main.dart';
 
+// ignore: must_be_immutable
 class Camera extends StatefulWidget {
   CameraController cameraController;
 
@@ -61,7 +62,7 @@ class _CameraState extends State<Camera> {
             : ResolutionPreset.veryHigh,
         enableAudio: false);
     await widget.cameraController.initialize();
+    await widget.cameraController.setFocusMode(FocusMode.locked);
     lc<CameraCubit>().switchIncreasedResolution();
-    // setState(() {});
   }
 }

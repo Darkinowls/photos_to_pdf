@@ -37,10 +37,8 @@ class CameraCubit extends Cubit<CameraState> {
 
   Future<void> sharePdf() async {
     emit(state.copyWith(status: Status.loading));
-    final s = Stopwatch()..start();
     final rotatedImages = rotateImages(state.images);
     final pdf = await convertImagesToPDF(rotatedImages);
-    print(s.elapsed);
     await Share.shareXFiles([XFile(pdf.path)]);
     emit(state.copyWith(status: Status.loaded));
   }
