@@ -2,23 +2,27 @@ part of 'camera_cubit.dart';
 
 class CameraState extends Equatable {
   final Status status;
-  final List<RotatableImage> files;
+  final bool increasedResolution;
+  final List<RotatableImage> images;
 
   const CameraState({
+    this.increasedResolution = false,
     this.status = Status.loaded,
-    this.files = const [],
+    this.images = const [],
   });
 
   @override
-  List<Object> get props => [status, files];
+  List<Object> get props => [status, images, increasedResolution];
 
   CameraState copyWith({
     Status? status,
-    List<RotatableImage>? photos,
+    bool? increasedResolution,
+    List<RotatableImage>? images,
   }) {
     return CameraState(
       status: status ?? this.status,
-      files: photos ?? files,
+      increasedResolution: increasedResolution ?? this.increasedResolution,
+      images: images ?? this.images,
     );
   }
 }

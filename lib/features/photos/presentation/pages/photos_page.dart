@@ -40,7 +40,7 @@ class PhotosPage extends StatelessWidget {
           ),
         ),
         BlocSelector<CameraCubit, CameraState, List<RotatableImage>>(
-          selector: (state) => state.files,
+          selector: (state) => state.images,
           builder: (context, photos) => SliverList.separated(
             itemCount: photos.length,
             itemBuilder: (context, index) => Card(

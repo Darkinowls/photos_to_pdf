@@ -17,8 +17,8 @@ class CameraPage extends StatefulWidget {
 }
 
 class _CameraPageState extends State<CameraPage> {
-  final CameraController cameraController =
-      CameraController(cameras[0], ResolutionPreset.high, enableAudio: false);
+  CameraController cameraController =
+      CameraController(cameras[0], ResolutionPreset.low, enableAudio: false);
 
   @override
   void initState() {
@@ -52,18 +52,41 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) => SizedBox(
-            height: constraints.maxHeight,
-            width: constraints.maxWidth,
-            child: CameraPreview(cameraController)),
-      ),
+      body: Stack(children: [
+        LayoutBuilder(
+          builder: (context, constraints) => SizedBox(
+              height: constraints.maxHeight,
+              width: constraints.maxWidth,
+              child: CameraPreview(cameraController)),
+        ),
+        Positioned(
+          left: 10,
+          child: SafeArea(
+            child: ElevatedButton(
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50)))),
+              onPressed: _changeCameraResolution,
+              child: BlocSelector<CameraCubit, CameraState, bool>(
+                selector: (state) => state.increasedResolution,
+                builder: (context, increasedResolution) {
+                  if (increasedResolution == true) {
+                    return const Text("1080p");
+                  }
+                  return const Text("720p");
+                },
+              ),
+            ),
+          ),
+        )
+      ]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           BlocSelector<CameraCubit, CameraState, List<RotatableImage>>(
-            selector: (state) => state.files,
+            selector: (state) => state.images,
             builder: (context, photos) => GestureDetector(
               onTap: () => Navigator.pushNamed(context, '/selected_photos'),
               child: AnimatedContainer(
@@ -87,6 +110,7 @@ class _CameraPageState extends State<CameraPage> {
           ),
           FloatingActionButton.large(
               backgroundColor: Colors.white,
+              splashColor: Colors.blue,
               onPressed: () => BlocProvider.of<CameraCubit>(context)
                   .addPhoto(cameraController.takePicture()),
               child: Container(
@@ -96,7 +120,7 @@ class _CameraPageState extends State<CameraPage> {
                     color: Colors.grey, shape: BoxShape.circle),
               )),
           BlocSelector<CameraCubit, CameraState, List<RotatableImage>>(
-            selector: (state) => state.files,
+            selector: (state) => state.images,
             builder: (context, photos) => GestureDetector(
               onTap: lc<CameraCubit>().removeAllImages,
               child: AnimatedContainer(
@@ -112,5 +136,17 @@ class _CameraPageState extends State<CameraPage> {
         ],
       ),
     );
+  }
+
+  _changeCameraResolution() async {
+    lc<CameraCubit>().switchIncreasedResolution();
+    cameraController = CameraController(
+        cameras[0],
+        lc<CameraCubit>().state.increasedResolution
+            ? ResolutionPreset.veryHigh
+            : ResolutionPreset.high,
+        enableAudio: false);
+    await cameraController.initialize();
+    setState(() {});
   }
 }
