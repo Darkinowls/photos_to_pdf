@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photos_to_pdf/core/locator.dart';
 import 'package:photos_to_pdf/features/camera/domain/entities/rotatable_file.dart';
 import 'package:photos_to_pdf/features/camera/presentation/manager/camera_cubit.dart';
+import 'package:photos_to_pdf/features/camera/presentation/pages/camera.dart';
 
 import '../../../../main.dart';
 
@@ -52,35 +53,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        LayoutBuilder(
-          builder: (context, constraints) => SizedBox(
-              height: constraints.maxHeight,
-              width: constraints.maxWidth,
-              child: CameraPreview(cameraController)),
-        ),
-        Positioned(
-          left: 10,
-          child: SafeArea(
-            child: ElevatedButton(
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)))),
-              onPressed: _changeCameraResolution,
-              child: BlocSelector<CameraCubit, CameraState, bool>(
-                selector: (state) => state.increasedResolution,
-                builder: (context, increasedResolution) {
-                  if (increasedResolution == true) {
-                    return const Text("1080p");
-                  }
-                  return const Text("720p");
-                },
-              ),
-            ),
-          ),
-        )
-      ]),
+      body: Camera(cameraController: cameraController),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -136,17 +109,5 @@ class _CameraPageState extends State<CameraPage> {
         ],
       ),
     );
-  }
-
-  _changeCameraResolution() async {
-    lc<CameraCubit>().switchIncreasedResolution();
-    cameraController = CameraController(
-        cameras[0],
-        lc<CameraCubit>().state.increasedResolution
-            ? ResolutionPreset.veryHigh
-            : ResolutionPreset.high,
-        enableAudio: false);
-    await cameraController.initialize();
-    setState(() {});
   }
 }
