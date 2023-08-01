@@ -5,6 +5,7 @@ import 'package:image/image.dart';
 import 'package:multi_image_picker_view/multi_image_picker_view.dart';
 import 'package:photos_to_pdf/core/locator.dart';
 import 'package:photos_to_pdf/core/status.dart';
+import 'package:photos_to_pdf/features/camera/presentation/manager/camera_cubit.dart';
 import 'package:photos_to_pdf/features/photos/presentation/manager/photo_cubit.dart';
 
 class MultiImagePickerPage extends StatefulWidget {
@@ -57,8 +58,10 @@ class _MultiImagePickerPage extends State<MultiImagePickerPage> {
                       child: CircularProgressIndicator(color: Colors.white));
                 }
                 return IconButton(
-                    onPressed: () =>
-                        lc<PhotoCubit>().sharePDF(controller.images),
+                    onPressed: () {
+                      lc<PhotoCubit>().sharePDF(controller.images);
+                      lc<CameraCubit>().setLoadedStatus();
+                    },
                     icon: const Icon(Icons.share));
               },
             ),

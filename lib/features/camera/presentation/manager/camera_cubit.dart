@@ -61,4 +61,6 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(
         images: [...state.images]..removeAt(index), status: Status.loaded));
   }
+
+  setLoadedStatus() => emit(state.copyWith(status: Status.loaded));
 }
