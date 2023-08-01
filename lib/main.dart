@@ -14,7 +14,7 @@ List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await [Permission.storage, Permission.camera].request();
+  while ((await [Permission.storage, Permission.camera].request()).containsValue(PermissionStatus.denied)){}
   await setupLocator();
   cameras = await availableCameras();
   runApp(const MyApp());
