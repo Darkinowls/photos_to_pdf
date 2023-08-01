@@ -51,7 +51,21 @@ class _CameraState extends State<Camera> {
               ),
             ),
           ),
-        )
+        ),
+
+    Positioned(
+      right: 10,
+      child: SafeArea(
+        child: ElevatedButton(
+          style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50)))),
+          onPressed: () => Navigator.pushNamed(context, '/picker_view'),
+          child: const Text("Gallery"),
+        ),
+      ),
+    )
       ]);
 
   _changeCameraResolution() async {

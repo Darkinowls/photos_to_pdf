@@ -111,3 +111,5 @@ class _CameraPageState extends State<CameraPage> {
     );
   }
 }
+
+// '/picker_view'
