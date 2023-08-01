@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -15,6 +14,7 @@ import '../../domain/use_cases/convert_images_to_pdf.dart';
 part 'camera_state.dart';
 
 class CameraCubit extends Cubit<CameraState> {
+  static const String pdfFilename = "result_camera";
   final ImagesIntoPdfConvertor imagesIntoPdfConvertor;
   final RotateImages rotateImages;
 
@@ -39,13 +39,14 @@ class CameraCubit extends Cubit<CameraState> {
 
   Future<void> sharePdf() async {
     if (state.status == Status.success) {
-      final pdf = await imagesIntoPdfConvertor.getResultFile();
+      final pdf = await imagesIntoPdfConvertor.getResultPdf(pdfFilename);
       await Share.shareXFiles([XFile(pdf.path)]);
       return;
     }
     emit(state.copyWith(status: Status.loading));
     final rotatedImages = rotateImages(state.images);
-    final pdf = await imagesIntoPdfConvertor.convertImages(rotatedImages);
+    final pdf = await imagesIntoPdfConvertor.saveImagesToPdf(
+        rotatedImages, pdfFilename);
     emit(state.copyWith(status: Status.success));
     await Share.shareXFiles([XFile(pdf.path)]);
   }
@@ -61,6 +62,4 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(
         images: [...state.images]..removeAt(index), status: Status.loaded));
   }
-
-  setLoadedStatus() => emit(state.copyWith(status: Status.loaded));
 }
